@@ -1,24 +1,25 @@
-from django.db.models import QuerySet
-
 from db.models import Movie
+
+from django.db.models import QuerySet
 
 
 def get_movies(
-    genres_ids: list[int] | None = None,
-    actors_ids: list[int] | None = None
+        genres_ids: list[int] | None = None,
+        actors_ids: list[int] | None = None
 ) -> QuerySet:
-    queryset = Movie.objects.all()
+    movies = Movie.objects.all()
 
     if genres_ids:
-        queryset = queryset.filter(genres__id__in=genres_ids)
-    if actors_ids:
-        queryset = queryset.filter(actors__id__in=actors_ids)
+        movies = movies.filter(genres__id__in=genres_ids)
 
-    return queryset.distinct()
+    if actors_ids:
+        movies = movies.filter(actors__id__in=actors_ids)
+
+    return movies
 
 
 def get_movie_by_id(movie_id: int) -> Movie:
-    return Movie.objects.get(pk=movie_id)
+    return Movie.objects.get(id=movie_id)
 
 
 def create_movie(
@@ -27,12 +28,13 @@ def create_movie(
         genres_ids: list[int] | None = None,
         actors_ids: list[int] | None = None
 ) -> None:
-    new_movie = Movie.objects.create(
+    movie = Movie.objects.create(
         title=movie_title,
-        description=movie_description,
+        description=movie_description
     )
 
     if genres_ids:
-        new_movie.genres.set(genres_ids)
+        movie.genres.set(genres_ids)
+
     if actors_ids:
-        new_movie.actors.set(actors_ids)
+        movie.actors.set(actors_ids)
